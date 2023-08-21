@@ -68,8 +68,23 @@ class ActivitiesPage extends StatelessWidget {
             }
             return Consumer<WorkoutProvider>(builder: (context, provider, _) {
               return provider.updateActivityList.isEmpty
-                  ? const Center(
-                      child: Text('No Records'),
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'lib/assets/icons/no_data.png',
+                            scale: 6,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Text(
+                            'No Records',
+                            style: TextStyle(fontFamily: 'SofiaPro'),
+                          ),
+                        ],
+                      ),
                     )
                   : ListView.builder(
                       itemCount: provider.updateActivityList.length,

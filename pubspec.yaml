@@ -62,6 +62,7 @@ flutter:
     - lib/assets/icons/gym.png
     - lib/assets/icons/meditation.png
     - lib/assets/icons/reading.png
+    - lib/assets/icons/no_data.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
   # For details regarding adding assets from package dependencies, see

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workout_track/controller/workout_provider.dart';
+import 'package:workout_track/widgets/activity_details_tile.dart';
 
 import 'add_activity_page.dart';
 
@@ -30,7 +31,32 @@ class ActivitiesPage extends StatelessWidget {
     workoutProvider.getActivityList(id);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Activities"),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddActivityPage(
+                    id: id,
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.add),
+            label: const Text(
+              'Add Activity',
+              style: TextStyle(fontFamily: 'SofiaPro'),
+            ),
+          )
+        ],
+        title: const Text(
+          "Activities",
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 30,
+          ),
+        ),
       ),
       body: FutureBuilder(
           future: workoutProvider.getActivityList(id),
@@ -48,43 +74,23 @@ class ActivitiesPage extends StatelessWidget {
                   : ListView.builder(
                       itemCount: provider.updateActivityList.length,
                       itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Column(
-                            children: [
-                              Text(provider.updateActivityList[index].date),
-                              Text(provider.updateActivityList[index].gym),
-                            ],
-                          ),
-                        );
+                        return ActivityDetailsTile(
+                            index: index,
+                            meditationTime: provider
+                                .updateActivityList[index].meditationTime,
+                            readingPages:
+                                provider.updateActivityList[index].readingPages,
+                            gym: provider.updateActivityList[index].gym,
+                            meditaion:
+                                provider.updateActivityList[index].meditation,
+                            reading: provider.updateActivityList[index].reading,
+                            wakeupTime:
+                                provider.updateActivityList[index].wakeupTime,
+                            date: provider.updateActivityList[index].date);
                       },
                     );
             });
           }),
-      floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: Colors.black,
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddActivityPage(
-                  id: id,
-                ),
-              ),
-            );
-          },
-          label: const Row(
-            children: [
-              Text(
-                'Add Activity',
-                style: TextStyle(color: Colors.white, fontFamily: 'SofiaPro'),
-              ),
-              Icon(
-                Icons.add,
-                color: Colors.white,
-              )
-            ],
-          )),
     );
   }
 }

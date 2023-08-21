@@ -28,7 +28,7 @@ class AddPerson extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(left: 15, right: 15, top: 15),
           child: Form(
-            key: workoutProvider.formKey,
+            key: workoutProvider.personAddingFormKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -42,6 +42,12 @@ class AddPerson extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 20),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Required Field';
+                      }
+                      return null;
+                    },
                     controller: workoutProvider.nameController,
                     textCapitalization: TextCapitalization.words,
                     keyboardType: TextInputType.name,
@@ -64,6 +70,12 @@ class AddPerson extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 20),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Required Field';
+                      }
+                      return null;
+                    },
                     controller: workoutProvider.ageController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
@@ -94,6 +106,12 @@ class AddPerson extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 20),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Required Field';
+                      }
+                      return null;
+                    },
                     controller: workoutProvider.heightController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
@@ -115,6 +133,12 @@ class AddPerson extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 20),
                   child: TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Required Field';
+                      }
+                      return null;
+                    },
                     controller: workoutProvider.weightController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
@@ -136,29 +160,33 @@ class AddPerson extends StatelessWidget {
                             backgroundColor:
                                 MaterialStateProperty.all(Colors.black)),
                         onPressed: () async {
-                          double height = double.parse(
-                              workoutProvider.heightController.text);
-                          double weight = double.parse(
-                              workoutProvider.weightController.text);
-                          workoutProvider.calculateBMI(height, weight);
+                          if (workoutProvider.personAddingFormKey.currentState!
+                              .validate()) {
+                            double height = double.parse(
+                                workoutProvider.heightController.text);
+                            double weight = double.parse(
+                                workoutProvider.weightController.text);
+                            workoutProvider.calculateBMI(height, weight);
 
-                          String formattedBMI =
-                              workoutProvider.bmi!.toStringAsFixed(2);
+                            String formattedBMI =
+                                workoutProvider.bmi!.toStringAsFixed(2);
 
-                          PersonModel person = PersonModel(
-                            name: workoutProvider.nameController.text,
-                            age: int.parse(workoutProvider.ageController.text),
-                            gender: workoutProvider.selectedGender,
-                            height: height,
-                            weight: weight,
-                            bmi: formattedBMI,
-                          );
-                          await DatabaseHelper.instance
-                              .insertPerson(person)
-                              .then((value) {
-                            workoutProvider.clearFields();
-                            workoutProvider.updateIndex(0);
-                          });
+                            PersonModel person = PersonModel(
+                              name: workoutProvider.nameController.text,
+                              age:
+                                  int.parse(workoutProvider.ageController.text),
+                              gender: workoutProvider.selectedGender,
+                              height: height,
+                              weight: weight,
+                              bmi: formattedBMI,
+                            );
+                            await DatabaseHelper.instance
+                                .insertPerson(person)
+                                .then((value) {
+                              workoutProvider.clearFields();
+                              workoutProvider.updateIndex(0);
+                            });
+                          }
                         },
                         child: const Text(
                           'Submit',

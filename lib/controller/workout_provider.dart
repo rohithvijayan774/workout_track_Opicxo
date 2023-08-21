@@ -10,23 +10,17 @@ import 'package:workout_track/views/home_screen.dart';
 import 'package:path/path.dart';
 
 class WorkoutProvider extends ChangeNotifier {
-  final formKey = GlobalKey<FormState>();
   TextEditingController nameController = TextEditingController();
   TextEditingController ageController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
+  final personAddingFormKey = GlobalKey<FormState>();
+  final updateActivityFormKey = GlobalKey<FormState>();
 
   List<PersonModel> persons = [];
   List<UpdateModel> updateActivityList = [];
-  List<UpdateModel> activitiesList = [];
 
   double? bmi;
-
-  // addtoActivityList() {
-  //   PersonModel person;
-  //   person.activities = activitiesList;
-  //   notifyListeners();
-  // }
 
   getPersonsList() async {
     persons = await DatabaseHelper.instance.queryAllPersons();
@@ -35,7 +29,7 @@ class WorkoutProvider extends ChangeNotifier {
     return persons;
   }
 
-  getActivityList(int id) async {
+  Future getActivityList(int id) async {
     updateActivityList = await DatabaseHelper.instance.getUpdatesForPerson(id);
     log('updates COllected');
     notifyListeners();
@@ -55,6 +49,19 @@ class WorkoutProvider extends ChangeNotifier {
     heightController.clear();
     weightController.clear();
     selectedGender = 'male';
+    notifyListeners();
+  }
+
+  clearActivityFields(BuildContext context) {
+    dateController.clear();
+    timeController.clear();
+    gymSelection = 'yes';
+    meditationSelection = 'yes';
+    meditationTimeController.clear();
+    readingSelection = 'yes';
+    readingPageController.clear();
+    Navigator.pop(context);
+    notifyListeners();
   }
 
 //------------------------ For Bottom Nav Bar----------------------------------
@@ -160,18 +167,16 @@ class DatabaseHelper extends ChangeNotifier {
     await db.execute(
         'CREATE TABLE persons(id INTEGER PRIMARY KEY,name TEXT,age INTEGER,gender TEXT,height REAL,weight REAL,bmi TEXT)');
     await db.execute(
-        'CREATE TABLE updates(id INTEGER PRIMARY KEY,person_id INTEGER,date TEXT, gym TEXT,meditation TEXT,meditationTime TEXT,reading TEXT,readingPages TEXT,FOREIGN KEY (person_id) REFERENCES persons (id))');
+        'CREATE TABLE updates(id INTEGER PRIMARY KEY,person_id INTEGER,date TEXT,wakeupTime TEXT,gym TEXT,meditation TEXT,meditationTime TEXT,reading TEXT,readingPages TEXT,FOREIGN KEY (person_id) REFERENCES persons (id))');
   }
 
   Future<int> insertPerson(PersonModel person) async {
     Database db = await instance.database;
-    print('Successfully Stored');
     return await db.insert('persons', person.toMap());
   }
 
   Future<int> insertUpdates(int personId, UpdateModel update) async {
     Database db = await instance.database;
-    print('SuccessFully Updated');
     return await db.insert('updates', update.toMap());
   }
 

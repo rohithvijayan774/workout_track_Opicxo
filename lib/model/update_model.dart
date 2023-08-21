@@ -1,8 +1,9 @@
 class UpdateModel {
   int id;
   String date;
+  String wakeupTime;
   String gym;
-  String meditaion;
+  String meditation;
   String meditationTime;
   String reading;
   String readingPages;
@@ -10,8 +11,9 @@ class UpdateModel {
   UpdateModel({
     required this.id,
     required this.date,
+    required this.wakeupTime,
     required this.gym,
-    required this.meditaion,
+    required this.meditation,
     required this.meditationTime,
     required this.reading,
     required this.readingPages,
@@ -21,8 +23,9 @@ class UpdateModel {
     return UpdateModel(
       id: map['person_id'],
       date: map['date'],
+      wakeupTime: map['wakeupTime'],
       gym: map['gym'],
-      meditaion: map['meditaion'] ?? '',
+      meditation: map['meditation'] ?? '',
       meditationTime: map['meditationTime'] ?? '',
       reading: map['reading'] ?? '',
       readingPages: map['readingPages'] ?? '',
@@ -33,8 +36,9 @@ class UpdateModel {
     return {
       'person_id': id,
       'date': date,
+      'wakeupTime': wakeupTime,
       'gym': gym,
-      'meditation': meditaion,
+      'meditation': meditation,
       'meditationTime': meditationTime,
       'reading': reading,
       'readingPages': readingPages

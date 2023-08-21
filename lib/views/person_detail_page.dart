@@ -161,7 +161,6 @@ class PersonDetailPage extends StatelessWidget {
           ],
         ),
       ),
-     
     );
   }
 }

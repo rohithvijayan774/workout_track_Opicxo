@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:workout_track/controller/workout_provider.dart';
+import 'package:workout_track/views/activities_page.dart';
 import 'package:workout_track/views/add_activity_page.dart';
 import 'package:workout_track/widgets/person_details_tile.dart';
 
@@ -23,6 +26,7 @@ class PersonDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<WorkoutProvider>(context, listen: false);
     return Scaffold(
       body: Column(
         children: [
@@ -118,73 +122,50 @@ class PersonDetailPage extends StatelessWidget {
                       title: 'Weight',
                       imagePath: 'lib/assets/icons/weight.png',
                       trailing: '$weight kg'),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    child: Divider(
-                      endIndent: 20,
-                      indent: 20,
-                    ),
-                  ),
-                  const Text(
-                    'Activities',
-                    style: TextStyle(fontFamily: 'Poppins', fontSize: 25),
-                  )
                 ],
               ),
             ),
           ),
         ],
       ),
-      // bottomNavigationBar: BottomAppBar(
-      //   elevation: 0,
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.end,
-      //     children: [
-      //       TextButton(
-      //         onPressed: () {
-      //           Navigator.push(
-      //               context,
-      //               MaterialPageRoute(
-      //                 builder: (context) => const ActivitiesPage(),
-      //               ));
-      //         },
-      //         child: const Row(
-      //           children: [
-      //             Text(
-      //               'Show Activities',
-      //               style: TextStyle(
-      //                   fontFamily: 'SofiaPro',
-      //                   fontSize: 18,
-      //                   fontWeight: FontWeight.w600),
-      //             ),
-      //             Icon(Icons.arrow_forward_rounded)
-      //           ],
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
-      floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: Colors.black,
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AddActivityPage(),
-                ));
-          },
-          label: const Row(
-            children: [
-              Text(
-                'Add Activity',
-                style: TextStyle(color: Colors.white, fontFamily: 'SofiaPro'),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ActivitiesPage(
+                        id: id,
+                        name: name,
+                        age: age,
+                        bmi: bmi,
+                        height: height,
+                        weight: weight,
+                        gender: gender,
+                      ),
+                    ));
+              },
+              child: const Row(
+                children: [
+                  Text(
+                    'Show Activities',
+                    style: TextStyle(
+                        fontFamily: 'SofiaPro',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Icon(Icons.arrow_forward_rounded)
+                ],
               ),
-              Icon(
-                Icons.add,
-                color: Colors.white,
-              )
-            ],
-          )),
+            ),
+          ],
+        ),
+      ),
+     
     );
   }
 }

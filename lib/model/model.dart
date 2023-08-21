@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:workout_track/model/update_model.dart';
+
 class PersonModel {
   int? id;
   String name;
@@ -6,13 +10,6 @@ class PersonModel {
   double height;
   double weight;
   String bmi;
-  String? date;
-  String? wakeupTime;
-  String? gym;
-  String? meditaion;
-  String? meditaionTime;
-  String? reading;
-  String? readingPages;
 
   PersonModel({
     this.id,
@@ -22,13 +19,6 @@ class PersonModel {
     required this.height,
     required this.weight,
     required this.bmi,
-    this.date,
-    this.wakeupTime,
-    this.gym,
-    this.meditaion,
-    this.meditaionTime,
-    this.reading,
-    this.readingPages,
   });
 
   factory PersonModel.fromMap(Map<String, dynamic> map) {
@@ -40,13 +30,6 @@ class PersonModel {
       height: map['height'],
       weight: map['weight'],
       bmi: map['bmi'],
-      date: map['date'],
-      wakeupTime: map['wakeupTime'],
-      gym: map['gym'],
-      meditaion: map['meditation'],
-      meditaionTime: map['meditationTime'],
-      reading: map['reading'],
-      readingPages: map['readingPages'],
     );
   }
 
@@ -59,13 +42,6 @@ class PersonModel {
       'height': height,
       'weight': weight,
       'bmi': bmi,
-      'date': date,
-      'wakeupTime': wakeupTime,
-      'gym': gym,
-      'meditation': meditaion,
-      'meditationTime': meditaionTime,
-      'reading': reading,
-      'readingPages': readingPages,
     };
   }
 }

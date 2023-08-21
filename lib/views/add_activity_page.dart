@@ -1,13 +1,33 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workout_track/controller/workout_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:workout_track/model/model.dart';
+import 'package:workout_track/model/update_model.dart';
 import 'package:workout_track/widgets/gym_selection.dart';
 import 'package:workout_track/widgets/meditation_selection.dart';
 import 'package:workout_track/widgets/reading_selection.dart';
 
 class AddActivityPage extends StatelessWidget {
-  const AddActivityPage({super.key});
+  final int id;
+  final String name;
+  final int age;
+  final String gender;
+  final double height;
+  final double weight;
+  final String bmi;
+  const AddActivityPage({
+    required this.id,
+    required this.name,
+    required this.age,
+    required this.bmi,
+    required this.gender,
+    required this.height,
+    required this.weight,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +140,30 @@ class AddActivityPage extends StatelessWidget {
                             backgroundColor:
                                 MaterialStateProperty.all(Colors.black),
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            final updateActivity = [
+                              UpdateModel(
+                                id: id,
+                                date: provider.dateController.text,
+                                gym: provider.gymSelection,
+                                meditaion: provider.meditationSelection,
+                                meditationTime:
+                                    provider.meditationTimeController.text,
+                                reading: provider.readingSelection,
+                                readingPages:
+                                    provider.readingPageController.text,
+                              )
+                            ];
+
+                            for (final update in updateActivity) {
+                              await DatabaseHelper.instance
+                                  .insertUpdates(id, update)
+                                  .then((value) {
+                                provider.getActivityList();
+                              });
+                            }
+                            Navigator.pop(context);
+                          },
                           child: const Text(
                             'Add Activity',
                             style: TextStyle(

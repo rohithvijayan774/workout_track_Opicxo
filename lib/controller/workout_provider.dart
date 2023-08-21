@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:workout_track/model/model.dart';
+import 'package:workout_track/model/update_model.dart';
 import 'package:workout_track/views/add_person.dart';
 import 'package:workout_track/views/home_screen.dart';
 import 'package:path/path.dart';
@@ -16,13 +18,29 @@ class WorkoutProvider extends ChangeNotifier {
   TextEditingController weightController = TextEditingController();
 
   List<PersonModel> persons = [];
+  List<UpdateModel> updateActivityList = [];
+  List<UpdateModel> activitiesList = [];
+
   double? bmi;
+
+  // addtoActivityList() {
+  //   PersonModel person;
+  //   person.activities = activitiesList;
+  //   notifyListeners();
+  // }
 
   getPersonsList() async {
     persons = await DatabaseHelper.instance.queryAllPersons();
     log('All datas Collected');
     notifyListeners();
     return persons;
+  }
+
+  getActivityList() async {
+    updateActivityList = await DatabaseHelper.instance.getUpdatesForPerson();
+    log('updates COllected');
+    notifyListeners();
+    return updateActivityList;
   }
 
   calculateBMI(double height, double weight) {
@@ -107,7 +125,7 @@ class WorkoutProvider extends ChangeNotifier {
 
 //----------------------Database Operation-----------------------------
 
-class DatabaseHelper {
+class DatabaseHelper extends ChangeNotifier {
   static final DatabaseHelper instance = DatabaseHelper.privateConstructor();
   static Database? _database;
 
@@ -129,13 +147,21 @@ class DatabaseHelper {
 
   Future<void> _createDatabase(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE persons(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,age INTEGER,gender TEXT,height REAL,weight REAL,bmi TEXT)');
+        'CREATE TABLE persons(id INTEGER PRIMARY KEY,name TEXT,age INTEGER,gender TEXT,height REAL,weight REAL,bmi TEXT)');
+    await db.execute(
+        'CREATE TABLE updates(id INTEGER PRIMARY KEY,person_id INTEGER,date TEXT, gym TEXT,meditation TEXT,meditationTime TEXT,reading TEXT,readingPages TEXT, FOREIGN KEY (person_id) REFERENCES persons (id))');
   }
 
   Future<int> insertPerson(PersonModel person) async {
     Database db = await instance.database;
     print('Successfully Stored');
     return await db.insert('persons', person.toMap());
+  }
+
+  Future<int> insertUpdates(int personId, UpdateModel update) async {
+    Database db = await instance.database;
+    print('SuccessFully Updated');
+    return await db.insert('updates', update.toMap());
   }
 
   Future<List<PersonModel>> queryAllPersons() async {
@@ -146,17 +172,34 @@ class DatabaseHelper {
         .toList();
   }
 
+  Future<List<UpdateModel>> getUpdatesForPerson() async {
+    Database db = await instance.database;
+    final List<Map<String, dynamic>> maps = await db.query('updates');
+    return maps.map((updateMap) => UpdateModel.fromMap(updateMap)).toList();
+  }
+
   Future<int> deletePerson(int id) async {
     Database db = await instance.database;
     return await db.delete('persons', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<int> updatePerson(PersonModel updatedPerson) async {
-    Database db = await instance.database;
-
-    return await db.update('persons', updatedPerson.toMap(),
-        where: 'id = ?', whereArgs: [updatedPerson.id]);
+  Future<void> updateActivites(int id, List<String> activities) async {
+    final db = await instance.database;
+    await db.update('persons', {'activities': activities},
+        where: 'id = ?', whereArgs: [id]);
+    notifyListeners();
+    log('Successfully Updated');
   }
+
+  // Future<int> updatePerson(PersonModel updatedPerson) async {
+  //   Database db = await instance.database;
+
+  //   String activityJson = jsonEncode(updatedPerson.activities);
+
+  //   Map<String, dynamic> personData = updatedPerson.toMap();
+  //   personData['activities'] = activityJson;
+  //   return await db.update('persons', personData);
+  // }
 
   factory DatabaseHelper() {
     return instance;

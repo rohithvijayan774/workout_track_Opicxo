@@ -1,7 +1,3 @@
-import 'dart:convert';
-
-import 'package:workout_track/model/update_model.dart';
-
 class PersonModel {
   int? id;
   String name;

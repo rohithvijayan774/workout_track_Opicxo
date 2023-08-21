@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -36,8 +35,8 @@ class WorkoutProvider extends ChangeNotifier {
     return persons;
   }
 
-  getActivityList() async {
-    updateActivityList = await DatabaseHelper.instance.getUpdatesForPerson();
+  getActivityList(int id) async {
+    updateActivityList = await DatabaseHelper.instance.getUpdatesForPerson(id);
     log('updates COllected');
     notifyListeners();
     return updateActivityList;
@@ -85,9 +84,11 @@ class WorkoutProvider extends ChangeNotifier {
 //---------------------For Adding Activities------------------------------------
 
   TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
   TextEditingController meditationTimeController = TextEditingController();
   TextEditingController readingPageController = TextEditingController();
   DateTime? pickedDate;
+  TimeOfDay? pickedTime;
 
   String gymSelection = 'yes';
 
@@ -121,6 +122,16 @@ class WorkoutProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  timePicker(BuildContext context) async {
+    pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    timeController.text = pickedTime!.format(context);
+
+    notifyListeners();
+  }
 }
 
 //----------------------Database Operation-----------------------------
@@ -149,7 +160,7 @@ class DatabaseHelper extends ChangeNotifier {
     await db.execute(
         'CREATE TABLE persons(id INTEGER PRIMARY KEY,name TEXT,age INTEGER,gender TEXT,height REAL,weight REAL,bmi TEXT)');
     await db.execute(
-        'CREATE TABLE updates(id INTEGER PRIMARY KEY,person_id INTEGER,date TEXT, gym TEXT,meditation TEXT,meditationTime TEXT,reading TEXT,readingPages TEXT, FOREIGN KEY (person_id) REFERENCES persons (id))');
+        'CREATE TABLE updates(id INTEGER PRIMARY KEY,person_id INTEGER,date TEXT, gym TEXT,meditation TEXT,meditationTime TEXT,reading TEXT,readingPages TEXT,FOREIGN KEY (person_id) REFERENCES persons (id))');
   }
 
   Future<int> insertPerson(PersonModel person) async {
@@ -172,10 +183,16 @@ class DatabaseHelper extends ChangeNotifier {
         .toList();
   }
 
-  Future<List<UpdateModel>> getUpdatesForPerson() async {
+  Future<List<UpdateModel>> getUpdatesForPerson(int personId) async {
     Database db = await instance.database;
-    final List<Map<String, dynamic>> maps = await db.query('updates');
-    return maps.map((updateMap) => UpdateModel.fromMap(updateMap)).toList();
+    final List<Map<String, dynamic>> maps = await db.query(
+      'updates',
+      where: 'person_id = ?',
+      whereArgs: [personId],
+    );
+    return List.generate(maps.length, (index) {
+      return UpdateModel.fromMap(maps[index]);
+    });
   }
 
   Future<int> deletePerson(int id) async {
@@ -190,16 +207,6 @@ class DatabaseHelper extends ChangeNotifier {
     notifyListeners();
     log('Successfully Updated');
   }
-
-  // Future<int> updatePerson(PersonModel updatedPerson) async {
-  //   Database db = await instance.database;
-
-  //   String activityJson = jsonEncode(updatedPerson.activities);
-
-  //   Map<String, dynamic> personData = updatedPerson.toMap();
-  //   personData['activities'] = activityJson;
-  //   return await db.update('persons', personData);
-  // }
 
   factory DatabaseHelper() {
     return instance;

@@ -1,10 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workout_track/controller/workout_provider.dart';
-import 'package:intl/intl.dart';
-import 'package:workout_track/model/model.dart';
 import 'package:workout_track/model/update_model.dart';
 import 'package:workout_track/widgets/gym_selection.dart';
 import 'package:workout_track/widgets/meditation_selection.dart';
@@ -12,20 +8,9 @@ import 'package:workout_track/widgets/reading_selection.dart';
 
 class AddActivityPage extends StatelessWidget {
   final int id;
-  final String name;
-  final int age;
-  final String gender;
-  final double height;
-  final double weight;
-  final String bmi;
+
   const AddActivityPage({
     required this.id,
-    required this.name,
-    required this.age,
-    required this.bmi,
-    required this.gender,
-    required this.height,
-    required this.weight,
     super.key,
   });
 
@@ -67,6 +52,32 @@ class AddActivityPage extends StatelessWidget {
                     keyboardType: TextInputType.name,
                     decoration: const InputDecoration(
                       hintText: 'Pick Date',
+                      hintStyle: TextStyle(fontFamily: 'SofiaPro'),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1),
+                      ),
+                    ),
+                  ),
+                ),
+                const Text(
+                  'Wakeup Time',
+                  style: TextStyle(
+                      fontFamily: 'SofiaPro',
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 20),
+                  child: TextFormField(
+                    onTap: () {
+                      provider.timePicker(context);
+                      if (provider.pickedDate != null) {}
+                    },
+                    controller: provider.timeController,
+                    textCapitalization: TextCapitalization.words,
+                    keyboardType: TextInputType.name,
+                    decoration: const InputDecoration(
+                      hintText: 'Pick Time',
                       hintStyle: TextStyle(fontFamily: 'SofiaPro'),
                       border: OutlineInputBorder(
                         borderSide: BorderSide(width: 1),
@@ -159,7 +170,7 @@ class AddActivityPage extends StatelessWidget {
                               await DatabaseHelper.instance
                                   .insertUpdates(id, update)
                                   .then((value) {
-                                provider.getActivityList();
+                                provider.getActivityList(id);
                               });
                             }
                             Navigator.pop(context);

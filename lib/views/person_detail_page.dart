@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:workout_track/controller/workout_provider.dart';
 import 'package:workout_track/views/activities_page.dart';
-import 'package:workout_track/views/add_activity_page.dart';
 import 'package:workout_track/widgets/person_details_tile.dart';
 
 class PersonDetailPage extends StatelessWidget {
@@ -26,7 +23,6 @@ class PersonDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<WorkoutProvider>(context, listen: false);
     return Scaffold(
       body: Column(
         children: [

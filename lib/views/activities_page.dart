@@ -27,13 +27,13 @@ class ActivitiesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final workoutProvider =
         Provider.of<WorkoutProvider>(context, listen: false);
-    workoutProvider.getActivityList();
+    workoutProvider.getActivityList(id);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Activities"),
       ),
       body: FutureBuilder(
-          future: workoutProvider.getActivityList(),
+          future: workoutProvider.getActivityList(id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -48,8 +48,14 @@ class ActivitiesPage extends StatelessWidget {
                   : ListView.builder(
                       itemCount: provider.updateActivityList.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(provider.updateActivityList[index].date),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          child: Column(
+                            children: [
+                              Text(provider.updateActivityList[index].date),
+                              Text(provider.updateActivityList[index].gym),
+                            ],
+                          ),
                         );
                       },
                     );
@@ -59,17 +65,13 @@ class ActivitiesPage extends StatelessWidget {
           backgroundColor: Colors.black,
           onPressed: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddActivityPage(
-                      id: id,
-                      name: name,
-                      age: age,
-                      bmi: bmi,
-                      gender: gender,
-                      height: height,
-                      weight: weight),
-                ));
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddActivityPage(
+                  id: id,
+                ),
+              ),
+            );
           },
           label: const Row(
             children: [
